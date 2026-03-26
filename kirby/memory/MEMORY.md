@@ -53,9 +53,13 @@
 ### 사용성 분석 필수 항목
 분석 대상/범위, 분석 방법, 발견 사항(심각도별), 개선 권고(우선순위), Quick Win 목록
 
+## 진행 중 프로젝트
+
+- **로그인 페이지 컨셉**: [project-login-page.md](project-login-page.md) — A안 확정, 디벨롭 중
+
 ## 교훈 (Lessons Learned)
 
-- **공통 교훈**: [lessons-learned.md](lessons-learned.md) (아직 없음 — 작업하면서 축적)
+- **공통 교훈**: [lessons-learned.md](lessons-learned.md) — 4건 (3D 이미지 감지, CORS, 시드 PRNG, 배경 분석)
 
 ## Git 컨벤션
 

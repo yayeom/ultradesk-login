@@ -258,7 +258,7 @@
   #conceptA .form-footer { text-align: center; margin-top: 24px; font-size: 13px; color: #9aa8c0; }
   #conceptA .form-footer a { color: #5B8DEF; text-decoration: none; font-weight: 500; }
 
-  /* ========== CONCEPT B — Soft Orbs (Dark) ========== */
+  /* ========== CONCEPT B — Soft Orbs (Dark) + Planetary Orbit ========== */
   #conceptB {
     background: #09090B;
     align-items: center;
@@ -269,36 +269,67 @@
     position: absolute;
     inset: 0;
     overflow: hidden;
+    perspective: 800px;
   }
+  /* Orbit container — centers the rotation system */
+  #conceptB .orbit-system {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 0; height: 0;
+    transform-style: preserve-3d;
+  }
+  /* Each orbit ring rotates in 3D */
+  #conceptB .orbit-ring {
+    position: absolute;
+    top: 0; left: 0;
+    transform-style: preserve-3d;
+  }
+  #conceptB .orbit-ring-1 {
+    animation: orbitSpin1 25s linear infinite;
+  }
+  #conceptB .orbit-ring-2 {
+    animation: orbitSpin2 35s linear infinite;
+  }
+  #conceptB .orbit-ring-3 {
+    animation: orbitSpin3 30s linear infinite;
+  }
+  /* Orbs on the orbit */
   #conceptB .orb {
     position: absolute;
     border-radius: 50%;
-    filter: blur(80px);
-    opacity: 0.6;
-    animation: orbFloat 8s ease-in-out infinite;
+    filter: blur(70px);
   }
   #conceptB .orb-1 {
-    width: 500px; height: 500px;
-    background: radial-gradient(circle, #3B82F6, transparent 70%);
-    top: 10%; left: 15%;
-    animation-delay: 0s;
+    width: 450px; height: 450px;
+    background: radial-gradient(circle, #3B82F6, transparent 65%);
+    opacity: 0.55;
+    /* Offset from center — radius of orbit */
+    transform: translateX(280px) translateZ(0px);
   }
   #conceptB .orb-2 {
-    width: 450px; height: 450px;
-    background: radial-gradient(circle, #8B5CF6, transparent 70%);
-    top: 40%; right: 10%;
-    animation-delay: -3s;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, #8B5CF6, transparent 65%);
+    opacity: 0.5;
+    transform: translateX(220px) translateZ(50px);
   }
   #conceptB .orb-3 {
-    width: 400px; height: 400px;
-    background: radial-gradient(circle, #06B6D4, transparent 70%);
-    bottom: 5%; left: 30%;
-    animation-delay: -5s;
+    width: 350px; height: 350px;
+    background: radial-gradient(circle, #06B6D4, transparent 65%);
+    opacity: 0.45;
+    transform: translateX(320px) translateZ(-30px);
   }
-  @keyframes orbFloat {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    33% { transform: translate(30px, -20px) scale(1.05); }
-    66% { transform: translate(-20px, 15px) scale(0.95); }
+  /* 3D orbit rotations — tilted planes, different speeds */
+  @keyframes orbitSpin1 {
+    0%   { transform: rotateX(60deg) rotateY(0deg); }
+    100% { transform: rotateX(60deg) rotateY(360deg); }
+  }
+  @keyframes orbitSpin2 {
+    0%   { transform: rotateX(45deg) rotateZ(30deg) rotateY(0deg); }
+    100% { transform: rotateX(45deg) rotateZ(30deg) rotateY(-360deg); }
+  }
+  @keyframes orbitSpin3 {
+    0%   { transform: rotateX(70deg) rotateZ(-20deg) rotateY(0deg); }
+    100% { transform: rotateX(70deg) rotateZ(-20deg) rotateY(360deg); }
   }
   #conceptB .glass-card {
     position: relative;
@@ -439,9 +470,17 @@
 <!-- ==================== CONCEPT B ==================== -->
 <div id="conceptB" class="concept">
   <div class="orbs-bg">
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
+    <div class="orbit-system">
+      <div class="orbit-ring orbit-ring-1">
+        <div class="orb orb-1"></div>
+      </div>
+      <div class="orbit-ring orbit-ring-2">
+        <div class="orb orb-2"></div>
+      </div>
+      <div class="orbit-ring orbit-ring-3">
+        <div class="orb orb-3"></div>
+      </div>
+    </div>
   </div>
   <div class="glass-card">
     <div class="logo"></div>
