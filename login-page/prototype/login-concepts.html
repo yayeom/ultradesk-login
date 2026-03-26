@@ -760,13 +760,25 @@ function initCanvasA() {
     nodes = [];
 
     // Logo nodes: first VISIBLE_IDLE are "always visible", rest spawn on hover
+    // First 20 idle nodes are "hint" nodes — loosely attracted to R shape
+    const HINT_COUNT = 20;
     for (let i = 0; i < LOGO_NODE_COUNT; i++) {
       const sat = 78 + Math.random() * 17;
       const light = 48 + Math.random() * 18;
       const alwaysVisible = i < VISIBLE_IDLE;
-      // ~3 idle nodes sparkle, ~5 logo nodes sparkle when formed
+      const isHint = alwaysVisible && i < HINT_COUNT;
       const idleSparkle = alwaysVisible && Math.random() > 0.95;
       const formedSparkle = !alwaysVisible && Math.random() > 0.98;
+      // 10% of nodes get accent colors: #B668FF (purple) or #6B9AFF (light blue)
+      let nodeColor;
+      const accentRoll = Math.random();
+      if (accentRoll < 0.05) {
+        nodeColor = 'hsla(272, 100%, 70%,';   // #B668FF — purple
+      } else if (accentRoll < 0.10) {
+        nodeColor = 'hsla(220, 100%, 71%,';    // #6B9AFF — light blue
+      } else {
+        nodeColor = `hsla(220, ${sat}%, ${light}%,`;
+      }
       nodes.push({
         x: Math.random() * w,
         y: Math.random() * h,
@@ -774,14 +786,15 @@ function initCanvasA() {
         vx: (Math.random() - 0.5) * 0.4,
         vy: (Math.random() - 0.5) * 0.4,
         r: alwaysVisible ? (Math.random() * 2.0 + 1.5) : (Math.random() * 1.8 + 1.2),
-        color: `hsla(220, ${sat}%, ${light}%,`,
+        color: nodeColor,
         bright: alwaysVisible ? Math.random() > 0.5 : Math.random() > 0.7,
         type: 'logo',
         alwaysVisible: alwaysVisible,
+        isHint: isHint,
         opacity: alwaysVisible ? 1.0 : 0.0,
         sparkle: idleSparkle ? 'idle' : (formedSparkle ? 'formed' : false),
         sparklePhase: Math.random() * Math.PI * 2,
-        sparkleSpeed: 0.4 + Math.random() * 0.5,   // slow: 5~8초 주기
+        sparkleSpeed: 0.4 + Math.random() * 0.5,
       });
     }
     // Store home positions (for scatter-back)
@@ -791,6 +804,16 @@ function initCanvasA() {
     for (let i = 0; i < BG_NODE_COUNT; i++) {
       const sat = 55 + Math.random() * 25;
       const light = 52 + Math.random() * 18;
+      // 10% accent colors for bg nodes too
+      let bgColor;
+      const bgAccent = Math.random();
+      if (bgAccent < 0.05) {
+        bgColor = 'hsla(272, 100%, 70%,';
+      } else if (bgAccent < 0.10) {
+        bgColor = 'hsla(220, 100%, 71%,';
+      } else {
+        bgColor = `hsla(218, ${sat}%, ${light}%,`;
+      }
       nodes.push({
         x: Math.random() * w,
         y: Math.random() * h,
@@ -798,7 +821,7 @@ function initCanvasA() {
         vx: (Math.random() - 0.5) * 0.2,
         vy: (Math.random() - 0.5) * 0.2,
         r: Math.random() * 2.2 + 1.2,
-        color: `hsla(218, ${sat}%, ${light}%,`,
+        color: bgColor,
         bright: Math.random() > 0.6,
         type: 'bg',
         alwaysVisible: true,
@@ -815,6 +838,7 @@ function initCanvasA() {
 
   function draw() {
     ctx.clearRect(0, 0, w, h);
+    const time = performance.now() / 1000;
 
     // Asymmetric blend: slow formation (0.012), faster scatter-back (0.035)
     const targetBlend = mouseInCanvas ? 1 : 0;
@@ -837,11 +861,22 @@ function initCanvasA() {
           n.opacity = 1.0;
         } else {
           const targetOpacity = mouseInCanvas ? 1.0 : 0.0;
-          const fadeSpeed = mouseInCanvas ? 0.025 : 0.05; // fade out faster
+          const fadeSpeed = mouseInCanvas ? 0.025 : 0.05;
           n.opacity += (targetOpacity - n.opacity) * fadeSpeed;
         }
 
-        // Move toward R target
+        // === Hint nodes: breathing attraction to R shape when idle ===
+        if (n.isHint && !mouseInCanvas && effectiveBlend < 0.1 && rTargets[i]) {
+          // Slow breathing: 0 ↔ 0.25 over ~8 seconds
+          const breathCycle = Math.sin(time * 0.4 + i * 0.3) * 0.5 + 0.5; // 0~1
+          const hintStrength = breathCycle * 0.25; // max 25% attraction
+          const tx = rTargets[i].x;
+          const ty = rTargets[i].y;
+          n.x += (tx - n.x) * 0.008 * hintStrength;
+          n.y += (ty - n.y) * 0.008 * hintStrength;
+        }
+
+        // Move toward R target (full hover)
         if (effectiveBlend > 0.005 && rTargets[i]) {
           const tx = rTargets[i].x;
           const ty = rTargets[i].y;
@@ -850,8 +885,9 @@ function initCanvasA() {
           n.y += (ty - n.y) * lerpSpeed * effectiveBlend;
         }
 
-        // Free movement (fades as R forms)
-        const freeFactor = 1 - effectiveBlend * 0.95;
+        // Free movement (fades as R forms, reduced for hint nodes during breathing)
+        const hintDampen = (n.isHint && !mouseInCanvas) ? 0.7 : 1.0;
+        const freeFactor = (1 - effectiveBlend * 0.95) * hintDampen;
         n.x += n.vx * freeFactor;
         n.y += n.vy * freeFactor;
 
@@ -900,9 +936,6 @@ function initCanvasA() {
         }
       }
     }
-
-    // Time for sparkle animation
-    const time = performance.now() / 1000;
 
     // Draw nodes
     nodes.forEach(n => {
