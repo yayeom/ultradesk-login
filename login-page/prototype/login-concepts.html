@@ -93,59 +93,67 @@
 
   /* ========== CONCEPT A — Pastel Blue Nodes & R Formation ========== */
   #conceptA {
-    background: linear-gradient(135deg, #D6E6FF 0%, #C4DAFF 25%, #E0E8FF 50%, #B8D0F9 75%, #D0DFFF 100%);
-    background-size: 300% 300%;
-    animation: bgRotate 20s ease-in-out infinite;
-  }
-  @keyframes bgRotate {
-    0%   { background-position: 0% 50%; }
-    25%  { background-position: 50% 0%; }
-    50%  { background-position: 100% 50%; }
-    75%  { background-position: 50% 100%; }
-    100% { background-position: 0% 50%; }
+    background: linear-gradient(135deg, #eff6ff, #f5f3ff);
   }
   #conceptA .visual-side {
     flex: 1;
     position: relative;
     overflow: hidden;
   }
-  #conceptA .visual-side .orbs-layer {
+  /* Floating color orbs — fade in/out */
+  #conceptA .visual-side .color-orbs {
     position: absolute;
     inset: 0;
-    overflow: hidden;
+    z-index: 0;
     pointer-events: none;
+    overflow: hidden;
+    mix-blend-mode: multiply;
   }
-  #conceptA .visual-side .a-orb {
+  #conceptA .color-orb {
     position: absolute;
     border-radius: 50%;
-    filter: blur(100px);
-    opacity: 0.45;
-    animation: aOrbFloat 10s ease-in-out infinite;
+    filter: blur(80px);
   }
-  #conceptA .a-orb-1 {
-    width: 420px; height: 420px;
-    background: radial-gradient(circle, #93B8F9, transparent 70%);
-    top: -5%; left: -5%;
-    animation-delay: 0s;
+  #conceptA .color-orb--pink {
+    width: 600px; height: 600px;
+    background: #F9E7FF;
+    top: -10%; right: 5%;
+    animation: orbPinkFloat 18s ease-in-out infinite;
   }
-  #conceptA .a-orb-2 {
-    width: 350px; height: 350px;
-    background: radial-gradient(circle, #B0C8FD, transparent 70%);
-    bottom: 5%; right: 5%;
-    animation-delay: -4s;
+  #conceptA .color-orb--blue {
+    width: 550px; height: 550px;
+    background: #D1DFFF;
+    bottom: -10%; left: 0%;
+    animation: orbBlueFloat 22s ease-in-out infinite;
   }
-  #conceptA .a-orb-3 {
-    width: 300px; height: 300px;
-    background: radial-gradient(circle, #C5D8FF, transparent 70%);
-    top: 40%; left: 30%;
-    animation-delay: -7s;
+  #conceptA .color-orb--pink2 {
+    width: 400px; height: 400px;
+    background: #F9E7FF;
+    bottom: 15%; right: 25%;
+    animation: orbPink2Float 25s ease-in-out infinite;
   }
-  @keyframes aOrbFloat {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    33% { transform: translate(25px, -15px) scale(1.06); }
-    66% { transform: translate(-15px, 20px) scale(0.94); }
+  @keyframes orbPinkFloat {
+    0%   { opacity: 0; transform: translate(0, 0) scale(0.8); }
+    20%  { opacity: 0.7; transform: translate(-40px, 30px) scale(1.1); }
+    50%  { opacity: 0.5; transform: translate(-60px, 50px) scale(1.0); }
+    80%  { opacity: 0.7; transform: translate(-25px, 15px) scale(1.05); }
+    100% { opacity: 0; transform: translate(0, 0) scale(0.8); }
   }
-  #conceptA .visual-side canvas {
+  @keyframes orbBlueFloat {
+    0%   { opacity: 0; transform: translate(0, 0) scale(0.9); }
+    25%  { opacity: 0.65; transform: translate(50px, -30px) scale(1.05); }
+    50%  { opacity: 0.45; transform: translate(70px, -50px) scale(1.1); }
+    75%  { opacity: 0.7; transform: translate(35px, -20px) scale(1.0); }
+    100% { opacity: 0; transform: translate(0, 0) scale(0.9); }
+  }
+  @keyframes orbPink2Float {
+    0%   { opacity: 0; transform: translate(0, 0) scale(0.85); }
+    30%  { opacity: 0.6; transform: translate(-25px, -40px) scale(1.0); }
+    60%  { opacity: 0.4; transform: translate(25px, -60px) scale(1.1); }
+    85%  { opacity: 0.65; transform: translate(15px, -25px) scale(1.05); }
+    100% { opacity: 0; transform: translate(0, 0) scale(0.85); }
+  }
+  #conceptA .visual-side canvas#canvasA {
     position: relative;
     z-index: 1;
     width: 100%;
@@ -395,10 +403,10 @@
 <!-- ==================== CONCEPT A ==================== -->
 <div id="conceptA" class="concept active">
   <div class="visual-side">
-    <div class="orbs-layer">
-      <div class="a-orb a-orb-1"></div>
-      <div class="a-orb a-orb-2"></div>
-      <div class="a-orb a-orb-3"></div>
+    <div class="color-orbs">
+      <div class="color-orb color-orb--pink"></div>
+      <div class="color-orb color-orb--blue"></div>
+      <div class="color-orb color-orb--pink2"></div>
     </div>
     <canvas id="canvasA"></canvas>
     <div class="hover-hint">Hover over the canvas</div>
