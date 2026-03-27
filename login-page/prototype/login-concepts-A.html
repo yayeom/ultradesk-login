@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login Page Concept A — Nodes & R</title>
+<style>
+  /* ========== RESET & BASE ========== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    background: #000;
+  }
+
+  /* ========== TAB NAVIGATION ========== */
+  .tab-nav {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: flex;
+    gap: 4px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 12px;
+    padding: 4px;
+    transition: all 0.4s ease;
+  }
+  .tab-nav.light {
+    background: rgba(255,255,255,0.55);
+    border: 1px solid rgba(255,255,255,0.7);
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+  }
+  .tab-nav.dark {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+  .tab-btn {
+    padding: 10px 28px;
+    border: none;
+    background: transparent;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    letter-spacing: 0.02em;
+  }
+  .light .tab-btn { color: rgba(0,0,0,0.4); }
+  .light .tab-btn:hover { color: rgba(0,0,0,0.7); }
+  .light .tab-btn.active { background: #fff; color: #1a1a2e; box-shadow: 0 1px 6px rgba(0,0,0,0.08); }
+  .dark .tab-btn { color: rgba(255,255,255,0.5); }
+  .dark .tab-btn:hover { color: rgba(255,255,255,0.8); }
+  .dark .tab-btn.active { background: rgba(255,255,255,0.12); color: #fff; }
+  .tab-label {
+    display: block;
+    font-size: 10px;
+    opacity: 0.6;
+    margin-top: 2px;
+  }
+
+  /* ========== CONCEPT PANELS ========== */
+  .concept { display: none; height: 100vh; width: 100vw; position: relative; }
+  .concept.active { display: flex; }
+
+  /* ========== FORM COMMON ========== */
+  .form-group { margin-bottom: 16px; width: 100%; }
+  .form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0;
+    font-size: 12px;
+    opacity: 0.5;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+  }
+  .g-icon { width: 18px; height: 18px; }
+
+  .concept { display: flex; height: 100vh; width: 100vw; position: relative; }
+  /* ========== CONCEPT A — Pastel Blue Nodes & R Formation ========== */
+  #conceptA {
+    background:
+      radial-gradient(circle at 15% 25%, rgba(255,255,255,0.6), transparent 45%),
+      radial-gradient(circle at 85% 65%, rgba(180, 170, 255, 0.3), transparent 50%),
+      radial-gradient(circle at 50% 85%, rgba(160, 185, 255, 0.25), transparent 50%),
+      linear-gradient(135deg, #E4E8FF, #D0D6FF, #C0C8FF, #B8BFFF);
+  }
+  #conceptA .visual-side {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+  /* Floating color orbs — fade in/out */
+  #conceptA .visual-side .color-orbs {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+    mix-blend-mode: screen;
+  }
+  #conceptA .color-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+  }
+  #conceptA .color-orb--pink {
+    width: 600px; height: 600px;
+    background: #F9E7FF;
+    top: -10%; right: 5%;
+    animation: orbPinkFloat 18s ease-in-out infinite;
+  }
+  #conceptA .color-orb--blue {
+    width: 550px; height: 550px;
+    background: #D1DFFF;
+    bottom: -10%; left: 0%;
+    animation: orbBlueFloat 22s ease-in-out infinite;
+  }
+  #conceptA .color-orb--pink2 {
+    width: 400px; height: 400px;
+    background: #F9E7FF;
+    bottom: 15%; right: 25%;
+    animation: orbPink2Float 25s ease-in-out infinite;
+  }
+  @keyframes orbPinkFloat {
+    0%   { opacity: 0; transform: translate(0, 0) scale(0.8); }
+    20%  { opacity: 0.7; transform: translate(-40px, 30px) scale(1.1); }
+    50%  { opacity: 0.5; transform: translate(-60px, 50px) scale(1.0); }
+    80%  { opacity: 0.7; transform: translate(-25px, 15px) scale(1.05); }
+    100% { opacity: 0; transform: translate(0, 0) scale(0.8); }
+  }
+  @keyframes orbBlueFloat {
+    0%   { opacity: 0; transform: translate(0, 0) scale(0.9); }
+    25%  { opacity: 0.65; transform: translate(50px, -30px) scale(1.05); }
+    50%  { opacity: 0.45; transform: translate(70px, -50px) scale(1.1); }
+    75%  { opacity: 0.7; transform: translate(35px, -20px) scale(1.0); }
+    100% { opacity: 0; transform: translate(0, 0) scale(0.9); }
+  }
+  @keyframes orbPink2Float {
+    0%   { opacity: 0; transform: translate(0, 0) scale(0.85); }
+    30%  { opacity: 0.6; transform: translate(-25px, -40px) scale(1.0); }
+    60%  { opacity: 0.4; transform: translate(25px, -60px) scale(1.1); }
+    85%  { opacity: 0.65; transform: translate(15px, -25px) scale(1.05); }
+    100% { opacity: 0; transform: translate(0, 0) scale(0.85); }
+  }
+  #conceptA .visual-side canvas#canvasA {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    cursor: default;
+  }
+  #conceptA .visual-side .hover-hint {
+    position: absolute;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    color: rgba(60, 80, 140, 0.45);
+    letter-spacing: 0.05em;
+    pointer-events: none;
+    transition: opacity 0.5s;
+  }
+  #conceptA .form-side {
+    width: 580px;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px;
+    border-left: 1px solid rgba(255,255,255,0.6);
+  }
+  #conceptA .form-container { width: 100%; max-width: 340px; }
+  #conceptA .form-container .logo {
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  #conceptA .form-container .logo svg { flex-shrink: 0; }
+  #conceptA .form-container .logo .logo-text {
+    font-size: 22px;
+    font-weight: 600;
+    color: #1a1a2e;
+    letter-spacing: -0.02em;
+  }
+  #conceptA .form-container h1 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin-bottom: 8px;
+  }
+  #conceptA .form-container .subtitle {
+    font-size: 14px;
+    color: #7889a8;
+    margin-bottom: 32px;
+  }
+  #conceptA .form-group label { color: #3a4a6b; }
+  #conceptA .form-group input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid rgba(120,140,200,0.2);
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s;
+    outline: none;
+    background: rgba(255,255,255,0.6);
+  }
+  #conceptA .form-group input:focus {
+    border-color: #5B8DEF;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(91,141,239,0.1);
+  }
+  #conceptA .btn-primary {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #5B8DEF, #7E6CF0);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 12px rgba(91,141,239,0.3);
+  }
+  #conceptA .btn-primary:hover { box-shadow: 0 4px 20px rgba(91,141,239,0.4); transform: translateY(-1px); }
+  #conceptA .btn-google {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid rgba(120,140,200,0.2);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.6);
+    color: #3a4a6b;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.2s;
+  }
+  #conceptA .btn-google:hover { background: #fff; }
+  #conceptA .forgot-link { text-align: right; margin-bottom: 20px; }
+  #conceptA .forgot-link a { font-size: 13px; color: #5B8DEF; text-decoration: none; }
+  #conceptA .divider { color: #9aa8c0; }
+  #conceptA .divider::before, #conceptA .divider::after { background: rgba(120,140,200,0.2); }
+  #conceptA .form-footer { text-align: center; margin-top: 24px; font-size: 13px; color: #9aa8c0; }
+  #conceptA .form-footer a { color: #5B8DEF; text-decoration: none; font-weight: 500; }
+
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- ==================== CONCEPT A ==================== -->
+<div id="conceptA" class="concept active">
+  <div class="visual-side">
+    <div class="color-orbs">
+      <div class="color-orb color-orb--pink"></div>
+      <div class="color-orb color-orb--blue"></div>
+      <div class="color-orb color-orb--pink2"></div>
+    </div>
+    <canvas id="canvasA"></canvas>
+    <div class="hover-hint">Hover over the canvas</div>
+  </div>
+  <div class="form-side">
+    <div class="form-container">
+      <div class="logo">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="6" cy="28" r="4.5" fill="#3a5ba9" stroke="#3a5ba9" stroke-width="1"/>
+          <circle cx="6" cy="12" r="3" fill="#5B8DEF" stroke="#5B8DEF" stroke-width="1"/>
+          <circle cx="20" cy="6" r="3.5" fill="#5B8DEF" stroke="#5B8DEF" stroke-width="1"/>
+          <circle cx="30" cy="18" r="3" fill="#7E6CF0" stroke="#7E6CF0" stroke-width="1"/>
+          <circle cx="22" cy="30" r="2.5" fill="#7E6CF0" stroke="#7E6CF0" stroke-width="1"/>
+          <line x1="6" y1="28" x2="6" y2="12" stroke="#5B8DEF" stroke-width="1.5" opacity="0.6"/>
+          <line x1="6" y1="12" x2="20" y2="6" stroke="#5B8DEF" stroke-width="1.5" opacity="0.6"/>
+          <line x1="20" y1="6" x2="30" y2="18" stroke="#7E6CF0" stroke-width="1.5" opacity="0.6"/>
+          <line x1="6" y1="28" x2="22" y2="30" stroke="#7E6CF0" stroke-width="1.5" opacity="0.4"/>
+          <line x1="6" y1="12" x2="30" y2="18" stroke="#5B8DEF" stroke-width="1" opacity="0.3"/>
+        </svg>
+        <span class="logo-text">UltraDesk</span>
+      </div>
+      <h1>Welcome to UltraDesk</h1>
+      <p class="subtitle">Connect to any device, anywhere</p>
+      <div id="auth-message" style="display:none; padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:16px;"></div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="login-email" placeholder="name@company.com">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="login-password" placeholder="Enter your password">
+      </div>
+      <div class="forgot-link"><a href="#" id="forgot-btn">Forgot password?</a></div>
+      <button class="btn-primary" id="login-btn">Continue</button>
+      <div class="divider"><span>or</span></div>
+      <button class="btn-google" id="google-btn">
+        <svg class="g-icon" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18A10.96 10.96 0 0 0 1 12c0 1.77.42 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+        Sign in with Google
+      </button>
+      <div class="form-footer">Don't have an account? <a href="#">Contact sales</a></div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+/* ========== R LOGO IMAGE (base64 embedded) ========== */
+const R_LOGO_SRC = 'data:image/png;base64,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';
+
+/* ========== TAB SWITCHING ========== */
+function switchTab(id) {
+  document.querySelectorAll('.concept').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('concept' + id).classList.add('active');
+  document.querySelectorAll('.tab-btn')[['A','B'].indexOf(id)].classList.add('active');
+  const nav = document.getElementById('tabNav');
+  nav.classList.remove('light', 'dark');
+  nav.classList.add(id === 'B' ? 'dark' : 'light');
+  if (id === 'A' && !canvasAInit) initCanvasA();
+}
+
+/* ========== CONCEPT A — Nodes & R Formation (Image-based) ========== */
+let canvasAInit = false;
+let logoPixelData = null; // will hold {edgePixels, fillPixels} from actual image
+
+// Load actual R logo image and extract red pixel positions
+function loadRLogoPixels() {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      const S = 200;
+      const oc = document.createElement('canvas');
+      oc.width = S; oc.height = S;
+      const o = oc.getContext('2d');
+      o.drawImage(img, 0, 0, S, S);
+      const d = o.getImageData(0, 0, S, S).data;
+      const edgePixels = [], fillPixels = [];
+      // Detect red pixels from the flat R logo image
+      const isShape = (x, y) => {
+        const i = (y * S + x) * 4;
+        const r = d[i], g = d[i+1], b = d[i+2];
+        // Simple and reliable: R channel dominant, clearly red
+        return r > 150 && r > g * 1.3 && r > b * 1.3;
+      };
+      for (let y = 2; y < S-2; y++) {
+        for (let x = 2; x < S-2; x++) {
+          if (isShape(x, y)) {
+            const edge = !isShape(x,y-1)||!isShape(x,y+1)||!isShape(x-1,y)||!isShape(x+1,y)||
+                         !isShape(x-1,y-1)||!isShape(x+1,y+1)||!isShape(x+1,y-1)||!isShape(x-1,y+1);
+            (edge ? edgePixels : fillPixels).push({x: x/S, y: y/S});
+          }
+        }
+      }
+      resolve({edgePixels, fillPixels});
+    };
+    img.onerror = () => {
+      console.warn('Could not load R logo image, using fallback');
+      resolve(null);
+    };
+    img.src = R_LOGO_SRC;
+  });
+}
+
+// Seeded PRNG (mulberry32) for reproducible shapes
+function mulberry32(seed) {
+  return function() {
+    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+    let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+function sampleFromPixels(pixelData, count, cx, cy, size) {
+  const rng = mulberry32(42); // fixed seed = same shape every time
+  const allPixels = [...pixelData.edgePixels, ...pixelData.fillPixels];
+  if (allPixels.length === 0) return [];
+
+  // Poisson Disk Sampling: evenly spaced points within the shape
+  // 1. Build a grid lookup using ALL shape pixels
+  const gridRes = 200;
+  const shapeGrid = new Set();
+  allPixels.forEach(p => {
+    const gx = Math.floor(p.x * gridRes);
+    const gy = Math.floor(p.y * gridRes);
+    shapeGrid.add(gx + ',' + gy);
+  });
+  const inShape = (px, py) => {
+    const gx = Math.floor(px * gridRes);
+    const gy = Math.floor(py * gridRes);
+    // Check 3x3 neighborhood for tolerance
+    for (let dx = -1; dx <= 1; dx++)
+      for (let dy = -1; dy <= 1; dy++)
+        if (shapeGrid.has((gx+dx)+','+(gy+dy))) return true;
+    return false;
+  };
+
+  // 2. Find bounding box
+  let mnX=1,mxX=0,mnY=1,mxY=0;
+  allPixels.forEach(p=>{if(p.x<mnX)mnX=p.x;if(p.x>mxX)mxX=p.x;if(p.y<mnY)mnY=p.y;if(p.y>mxY)mxY=p.y;});
+
+  // 3. Calculate minimum distance based on actual pixel coverage
+  const pixelArea = allPixels.length / (gridRes * gridRes); // actual shape area ratio
+  const bboxArea = (mxX - mnX) * (mxY - mnY);
+  const shapeArea = Math.max(pixelArea, bboxArea * 0.15); // at least 15% of bbox
+  const minDist = Math.sqrt(shapeArea / count) * 0.75;
+
+  // 4. Poisson disk sampling via dart throwing with grid acceleration
+  const cellSize = minDist / Math.SQRT2;
+  const gridW = Math.ceil((mxX - mnX) / cellSize) + 1;
+  const gridH = Math.ceil((mxY - mnY) / cellSize) + 1;
+  const grid = new Array(gridW * gridH).fill(-1);
+  const points = [];
+  const activeList = [];
+
+  const toGrid = (px, py) => ({
+    gx: Math.floor((px - mnX) / cellSize),
+    gy: Math.floor((py - mnY) / cellSize)
+  });
+
+  const tooClose = (px, py) => {
+    const {gx, gy} = toGrid(px, py);
+    for (let dx = -2; dx <= 2; dx++) {
+      for (let dy = -2; dy <= 2; dy++) {
+        const nx = gx + dx, ny = gy + dy;
+        if (nx >= 0 && nx < gridW && ny >= 0 && ny < gridH) {
+          const idx = grid[ny * gridW + nx];
+          if (idx >= 0) {
+            const ex = points[idx].x - px, ey = points[idx].y - py;
+            if (ex*ex + ey*ey < minDist*minDist) return true;
+          }
+        }
+      }
+    }
+    return false;
+  };
+
+  // Seed with a deterministic shape pixel
+  const seed = allPixels[Math.floor(rng() * allPixels.length)];
+  points.push(seed);
+  activeList.push(0);
+  const sg = toGrid(seed.x, seed.y);
+  grid[sg.gy * gridW + sg.gx] = 0;
+
+  const maxAttempts = 30;
+  while (activeList.length > 0 && points.length < count * 1.5) {
+    const ri = Math.floor(rng() * activeList.length);
+    const pt = points[activeList[ri]];
+    let found = false;
+    for (let a = 0; a < maxAttempts; a++) {
+      const angle = rng() * Math.PI * 2;
+      const dist = minDist + rng() * minDist;
+      const nx = pt.x + Math.cos(angle) * dist;
+      const ny = pt.y + Math.sin(angle) * dist;
+      if (nx >= mnX && nx <= mxX && ny >= mnY && ny <= mxY && inShape(nx, ny) && !tooClose(nx, ny)) {
+        const np = {x: nx, y: ny};
+        const ng = toGrid(nx, ny);
+        points.push(np);
+        activeList.push(points.length - 1);
+        grid[ng.gy * gridW + ng.gx] = points.length - 1;
+        found = true;
+        break;
+      }
+    }
+    if (!found) activeList.splice(ri, 1);
+  }
+
+  // 5. Trim to exact count if we got too many
+  while (points.length > count) {
+    points.splice(Math.floor(rng() * points.length), 1);
+  }
+
+  // 6. If we got fewer, fill with deterministic shape pixels
+  while (points.length < count) {
+    points.push(allPixels[Math.floor(rng() * allPixels.length)]);
+  }
+
+  // Shuffle with seeded rng
+  for (let i = points.length-1; i > 0; i--) { const j = Math.floor(rng()*(i+1)); [points[i],points[j]]=[points[j],points[i]]; }
+
+  // Center and scale
+  const pcx = (mnX+mxX)/2, pcy = (mnY+mxY)/2;
+  return points.map(pt=>({x:cx+(pt.x-pcx)*size, y:cy+(pt.y-pcy)*size}));
+}
+
+function initCanvasA() {
+  canvasAInit = true;
+  const canvas = document.getElementById('canvasA');
+  const ctx = canvas.getContext('2d');
+  const hint = document.querySelector('#conceptA .hover-hint');
+  let w, h;
+  let mouseInCanvas = false;
+  let hoverBlend = 0;
+
+  // Node counts
+  const VISIBLE_IDLE = 60;      // logo nodes visible when idle
+  const LOGO_NODE_COUNT = 300;  // total logo nodes (rest appear on hover)
+  const BG_NODE_COUNT = 120;    // always-floating background nodes
+
+  let nodes = [];
+  let rTargets = [];
+
+  function resize() {
+    const r = window.devicePixelRatio || 1;
+    const rect = canvas.parentElement.getBoundingClientRect();
+    w = rect.width; h = rect.height;
+    canvas.width = w * r; canvas.height = h * r;
+    canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+    ctx.setTransform(r, 0, 0, r, 0, 0);
+    if (logoPixelData) {
+      rTargets = sampleFromPixels(logoPixelData, LOGO_NODE_COUNT, w * 0.46, h * 0.50, Math.min(w, h) * 0.68);
+    }
+  }
+
+  function createNodes() {
+    nodes = [];
+
+    // Logo nodes: first VISIBLE_IDLE are "always visible", rest spawn on hover
+    // First 20 idle nodes are "hint" nodes — loosely attracted to R shape
+    const HINT_COUNT = 20;
+    for (let i = 0; i < LOGO_NODE_COUNT; i++) {
+      const sat = 78 + Math.random() * 17;
+      const light = 48 + Math.random() * 18;
+      const alwaysVisible = i < VISIBLE_IDLE;
+      const isHint = alwaysVisible && i < HINT_COUNT;
+      const idleSparkle = alwaysVisible && Math.random() > 0.95;
+      const formedSparkle = !alwaysVisible && Math.random() > 0.98;
+      // 10% of nodes get accent colors: #B668FF (purple) or #6B9AFF (light blue)
+      let nodeColor;
+      const accentRoll = Math.random();
+      if (accentRoll < 0.05) {
+        nodeColor = 'hsla(272, 100%, 70%,';   // #B668FF — purple
+      } else if (accentRoll < 0.10) {
+        nodeColor = 'hsla(184, 95%, 67%,';      // #5AEDFB — cyan
+      } else {
+        nodeColor = `hsla(220, ${sat}%, ${light}%,`;
+      }
+      nodes.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        homeX: 0, homeY: 0,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        r: alwaysVisible ? (Math.random() * 2.0 + 1.5) : (Math.random() * 1.8 + 1.2),
+        color: nodeColor,
+        bright: alwaysVisible ? Math.random() > 0.5 : Math.random() > 0.7,
+        type: 'logo',
+        alwaysVisible: alwaysVisible,
+        isHint: isHint,
+        opacity: alwaysVisible ? 1.0 : 0.0,
+        sparkle: idleSparkle ? 'idle' : (formedSparkle ? 'formed' : false),
+        sparklePhase: Math.random() * Math.PI * 2,
+        sparkleSpeed: 0.4 + Math.random() * 0.5,
+      });
+    }
+    // Store home positions (for scatter-back)
+    nodes.forEach(n => { n.homeX = n.x; n.homeY = n.y; });
+
+    // Background nodes: always visible, low opacity, never join R
+    for (let i = 0; i < BG_NODE_COUNT; i++) {
+      const sat = 55 + Math.random() * 25;
+      const light = 52 + Math.random() * 18;
+      // 10% accent colors for bg nodes too
+      let bgColor;
+      const bgAccent = Math.random();
+      if (bgAccent < 0.05) {
+        bgColor = 'hsla(272, 100%, 70%,';
+      } else if (bgAccent < 0.10) {
+        bgColor = 'hsla(184, 95%, 67%,';        // #5AEDFB — cyan
+      } else {
+        bgColor = `hsla(218, ${sat}%, ${light}%,`;
+      }
+      nodes.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        homeX: 0, homeY: 0,
+        vx: (Math.random() - 0.5) * 0.2,
+        vy: (Math.random() - 0.5) * 0.2,
+        r: Math.random() * 2.2 + 1.2,
+        color: bgColor,
+        bright: Math.random() > 0.6,
+        type: 'bg',
+        alwaysVisible: true,
+        opacity: 0.85,
+        sparkle: Math.random() > 0.95 ? 'idle' : false, // ~5% of bg nodes sparkle (~6개)
+        sparklePhase: Math.random() * Math.PI * 2,
+        sparkleSpeed: 0.3 + Math.random() * 0.4,   // slow: 6~10초 주기
+      });
+    }
+  }
+
+  canvas.addEventListener('mouseenter', () => { mouseInCanvas = true; hint.style.opacity = '0'; });
+  canvas.addEventListener('mouseleave', () => { mouseInCanvas = false; hint.style.opacity = '1'; });
+
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+    const time = performance.now() / 1000;
+
+    // Asymmetric blend: slow formation (0.012), faster scatter-back (0.035)
+    const targetBlend = mouseInCanvas ? 1 : 0;
+    const blendSpeed = mouseInCanvas ? 0.012 : 0.035;
+    hoverBlend += (targetBlend - hoverBlend) * blendSpeed;
+
+    // Ease curve for scatter-back: cubic ease-out for natural deceleration
+    const scatterEase = mouseInCanvas ? hoverBlend : (1 - Math.pow(1 - hoverBlend, 0.5));
+    const effectiveBlend = mouseInCanvas ? hoverBlend : scatterEase;
+
+    // Update node positions & opacity
+    nodes.forEach((n, i) => {
+      if (n.type === 'bg') {
+        // BG nodes always float
+        n.x += n.vx;
+        n.y += n.vy;
+      } else {
+        // Logo node opacity: always-visible stay at 1, others fade in/out with hover
+        if (n.alwaysVisible) {
+          n.opacity = 1.0;
+        } else {
+          const targetOpacity = mouseInCanvas ? 1.0 : 0.0;
+          const fadeSpeed = mouseInCanvas ? 0.025 : 0.05;
+          n.opacity += (targetOpacity - n.opacity) * fadeSpeed;
+        }
+
+        // === Hint nodes: breathing attraction to R shape when idle ===
+        if (n.isHint && !mouseInCanvas && effectiveBlend < 0.1 && rTargets[i]) {
+          // Slow breathing: 0 ↔ 0.25 over ~8 seconds
+          const breathCycle = Math.sin(time * 0.4 + i * 0.3) * 0.5 + 0.5; // 0~1
+          const hintStrength = breathCycle * 0.25; // max 25% attraction
+          const tx = rTargets[i].x;
+          const ty = rTargets[i].y;
+          n.x += (tx - n.x) * 0.008 * hintStrength;
+          n.y += (ty - n.y) * 0.008 * hintStrength;
+        }
+
+        // Move toward R target (full hover)
+        if (effectiveBlend > 0.005 && rTargets[i]) {
+          const tx = rTargets[i].x;
+          const ty = rTargets[i].y;
+          const lerpSpeed = 0.02 + (i / LOGO_NODE_COUNT) * 0.012;
+          n.x += (tx - n.x) * lerpSpeed * effectiveBlend;
+          n.y += (ty - n.y) * lerpSpeed * effectiveBlend;
+        }
+
+        // Free movement (fades as R forms, reduced for hint nodes during breathing)
+        const hintDampen = (n.isHint && !mouseInCanvas) ? 0.7 : 1.0;
+        const freeFactor = (1 - effectiveBlend * 0.95) * hintDampen;
+        n.x += n.vx * freeFactor;
+        n.y += n.vy * freeFactor;
+
+        // When scattering back, give a gentle push outward from center
+        if (!mouseInCanvas && hoverBlend > 0.02 && hoverBlend < 0.8) {
+          const cx = w * 0.46, cy = h * 0.5;
+          const dx = n.x - cx, dy = n.y - cy;
+          const dist = Math.sqrt(dx*dx + dy*dy) || 1;
+          const pushStrength = 0.3 * (1 - hoverBlend);
+          n.x += (dx / dist) * pushStrength;
+          n.y += (dy / dist) * pushStrength;
+        }
+      }
+
+      // Boundary bounce
+      if (n.x < 0 || n.x > w) n.vx *= -1;
+      if (n.y < 0 || n.y > h) n.vy *= -1;
+      n.x = Math.max(0, Math.min(w, n.x));
+      n.y = Math.max(0, Math.min(h, n.y));
+    });
+
+    // Draw connection lines (only between visible nodes)
+    const maxDist = 85 + effectiveBlend * 40;
+    const bgMaxDist = 150;
+    for (let i = 0; i < nodes.length; i++) {
+      if (nodes[i].opacity < 0.05) continue; // skip invisible
+      for (let j = i + 1; j < nodes.length; j++) {
+        if (nodes[j].opacity < 0.05) continue;
+        const dx = nodes[i].x - nodes[j].x;
+        const dy = nodes[i].y - nodes[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const anyBg = nodes[i].type === 'bg' || nodes[j].type === 'bg';
+        const bothBg = nodes[i].type === 'bg' && nodes[j].type === 'bg';
+        const limit = anyBg ? bgMaxDist : maxDist;
+        if (dist < limit) {
+          const pairOpacity = Math.min(nodes[i].opacity, nodes[j].opacity);
+          let alpha = (1 - dist / limit) * (0.10 + effectiveBlend * 0.16) * pairOpacity;
+          if (bothBg) alpha *= 0.4;
+          else if (anyBg) alpha *= 0.55;
+          ctx.beginPath();
+          ctx.moveTo(nodes[i].x, nodes[i].y);
+          ctx.lineTo(nodes[j].x, nodes[j].y);
+          ctx.strokeStyle = `rgba(37, 100, 237, ${alpha})`;
+          ctx.lineWidth = anyBg ? 0.35 : (0.5 + effectiveBlend * 0.4);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Draw nodes
+    nodes.forEach(n => {
+      if (n.opacity < 0.02) return;
+
+      const nodeAlpha = n.type === 'bg' ? n.opacity : n.opacity * (0.65 + effectiveBlend * 0.35);
+
+      // ===== Star Twinkle — 부드러운 번쩍 + 십자 광선 =====
+      let twinkle = 0;
+      if (n.sparkle) {
+        const active =
+          (n.sparkle === 'idle' && effectiveBlend < 0.3) ||
+          (n.sparkle === 'formed' && effectiveBlend > 0.7) ||
+          (n.sparkle === 'idle' && n.type === 'bg');
+        if (active) {
+          // Smooth sine wave — gentle rise and fall
+          const wave = Math.sin(time * n.sparkleSpeed + n.sparklePhase);
+          twinkle = Math.max(0, wave) * Math.max(0, wave); // smooth quadratic curve
+        }
+      }
+
+      // Normal glow
+      if (n.bright && nodeAlpha > 0.1 && twinkle < 0.05) {
+        const glowSize = n.r * (5 + effectiveBlend * 4);
+        const grad = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, glowSize);
+        grad.addColorStop(0, n.color + (0.20 * nodeAlpha).toFixed(2) + ')');
+        grad.addColorStop(0.5, n.color + (0.05 * nodeAlpha).toFixed(2) + ')');
+        grad.addColorStop(1, 'transparent');
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, glowSize, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+      }
+
+      // Star twinkle — soft bright glow + cross rays
+      if (twinkle > 0.02) {
+        const t = twinkle; // 0~1, smooth
+        const flashAlpha = t * 0.6 * nodeAlpha;
+        const flashSize = n.r * (6 + t * 14);
+
+        // Soft radial glow — bright white-blue center
+        const grad = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, flashSize);
+        grad.addColorStop(0, `rgba(235, 245, 255, ${(flashAlpha * 0.85).toFixed(3)})`);
+        grad.addColorStop(0.25, `rgba(200, 225, 255, ${(flashAlpha * 0.5).toFixed(3)})`);
+        grad.addColorStop(0.6, `rgba(160, 200, 255, ${(flashAlpha * 0.15).toFixed(3)})`);
+        grad.addColorStop(1, 'transparent');
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, flashSize, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+
+        // Cross rays (+) — soft, only visible at higher intensity
+        if (t > 0.2) {
+          const rayT = (t - 0.2) / 0.8; // 0~1 within ray range
+          const rayLen = n.r * (3 + rayT * 10);
+          const rayAlpha = rayT * 0.4 * nodeAlpha;
+          ctx.strokeStyle = `rgba(220, 235, 255, ${rayAlpha.toFixed(3)})`;
+          ctx.lineWidth = 0.5 + rayT * 0.5;
+          // Horizontal
+          ctx.beginPath();
+          ctx.moveTo(n.x - rayLen, n.y);
+          ctx.lineTo(n.x + rayLen, n.y);
+          ctx.stroke();
+          // Vertical
+          ctx.beginPath();
+          ctx.moveTo(n.x, n.y - rayLen);
+          ctx.lineTo(n.x, n.y + rayLen);
+          ctx.stroke();
+        }
+      }
+
+      // Dot — gently brighter during twinkle
+      const dotR = n.r * (1 + twinkle * 0.3);
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, dotR, 0, Math.PI * 2);
+      if (twinkle > 0.1) {
+        const blend = twinkle * 0.7;
+        ctx.fillStyle = `rgba(${200 + blend*55}, ${225 + blend*30}, 255, ${nodeAlpha.toFixed(2)})`;
+      } else {
+        ctx.fillStyle = n.color + nodeAlpha.toFixed(2) + ')';
+      }
+      ctx.fill();
+    });
+
+    requestAnimationFrame(draw);
+  }
+
+  resize();
+  createNodes();
+  draw();
+  window.addEventListener('resize', () => { resize(); createNodes(); });
+}
+
+// Init: load R logo image first, then start canvas
+(async function() {
+  logoPixelData = await loadRLogoPixels();
+  if (!logoPixelData) {
+    console.error('Failed to load R logo pixels');
+    return;
+  }
+  initCanvasA();
+})();
+</script>
+
+<!-- Supabase Auth -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://xxruetynrhqdpadsqboz.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_kggHLyWQuUcY4N--iixvBQ_oqfW-IGm';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const emailInput = document.getElementById('login-email');
+const passwordInput = document.getElementById('login-password');
+const loginBtn = document.getElementById('login-btn');
+const googleBtn = document.getElementById('google-btn');
+const forgotBtn = document.getElementById('forgot-btn');
+const authMsg = document.getElementById('auth-message');
+
+function showMessage(text, isError = false) {
+  authMsg.style.display = 'block';
+  authMsg.textContent = text;
+  authMsg.style.background = isError ? 'rgba(239,68,68,0.1)' : 'rgba(59,130,246,0.1)';
+  authMsg.style.color = isError ? '#DC2626' : '#2564ED';
+}
+
+function hideMessage() {
+  authMsg.style.display = 'none';
+}
+
+function setLoading(btn, loading) {
+  btn.disabled = loading;
+  btn.style.opacity = loading ? '0.6' : '1';
+}
+
+// Email + Password Login
+loginBtn.addEventListener('click', async () => {
+  hideMessage();
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+
+  if (!email || !password) {
+    showMessage('Please enter email and password.', true);
+    return;
+  }
+
+  setLoading(loginBtn, true);
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  setLoading(loginBtn, false);
+
+  if (error) {
+    showMessage(error.message, true);
+  } else {
+    showMessage('Login successful! Welcome, ' + (data.user.email || ''));
+  }
+});
+
+// Enter key support
+passwordInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') loginBtn.click();
+});
+emailInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') passwordInput.focus();
+});
+
+// Google OAuth
+googleBtn.addEventListener('click', async () => {
+  hideMessage();
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.href }
+  });
+  if (error) showMessage(error.message, true);
+});
+
+// Forgot Password
+forgotBtn.addEventListener('click', async (e) => {
+  e.preventDefault();
+  hideMessage();
+  const email = emailInput.value.trim();
+  if (!email) {
+    showMessage('Please enter your email first.', true);
+    return;
+  }
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.href
+  });
+  if (error) {
+    showMessage(error.message, true);
+  } else {
+    showMessage('Password reset email sent to ' + email);
+  }
+});
+
+// Check if already logged in
+(async () => {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) {
+    showMessage('Already logged in as ' + session.user.email);
+  }
+})();
+</script>
+
+</body>
+</html>
