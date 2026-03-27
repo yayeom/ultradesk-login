@@ -26,6 +26,19 @@
 #   → 산출물: login-page/prototype/login-concepts.html
 #   → 참고 이미지: login-page/prototype/r_logo.png
 
+# [DONE] 로그인 페이지 A/B안 디벨롭 (2일차)
+#   입력: 2026-03-27 09:00 | 완료: 2026-03-27 | 소요: ~1h
+#   모델: claude-opus-4-6 | 토큰: 세션 누적
+#   프롬프트:
+#     A안: 힌트 호흡(idle 20개 노드 R 근처 수렴/이완), 액센트 컬러(#B668FF 5% + #5AEDFB 5%),
+#     배경 라벤더/페리윙클 파스텔 그라데이션, 오브 blend screen, 폼 580px, Welcome to UltraDesk.
+#     B안: 로고 그라데이션(#3B82F6→#8B5CF6) 적용, Welcome to UltraDesk.
+#   → A안 배경: radial + linear gradient (라벤더/페리윙클 파스텔)
+#   → A안 힌트 호흡: sin 파형 0↔25% 인력, ~8초 주기, 자유이동 30% 감쇠
+#   → A안 노드: 90% 블루 + 5% 퍼플(#B668FF) + 5% 시안(#5AEDFB)
+#   → B안 로고: 심볼 SVG + 텍스트 모두 버튼 그라데이션 적용
+#   → 커밋: a4b8bf4, ddb9854
+
 
 # ============================================================
 # [INPUT] 여기에 지시사항을 입력하세요 ▼
