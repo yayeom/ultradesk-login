@@ -303,9 +303,13 @@
         </svg>
         <span class="logo-text">UltraDesk</span>
       </div>
-      <h1>Welcome to UltraDesk</h1>
-      <p class="subtitle">Connect to any device, anywhere</p>
+      <h1 id="auth-title">Welcome to UltraDesk</h1>
+      <p class="subtitle" id="auth-subtitle">Connect to any device, anywhere</p>
       <div id="auth-message" style="display:none; padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:16px;"></div>
+      <div class="form-group" id="name-group" style="display:none;">
+        <label>Name</label>
+        <input type="text" id="signup-name" placeholder="Your name">
+      </div>
       <div class="form-group">
         <label>Email</label>
         <input type="email" id="login-email" placeholder="name@company.com">
@@ -314,14 +318,18 @@
         <label>Password</label>
         <input type="password" id="login-password" placeholder="Enter your password">
       </div>
-      <div class="forgot-link"><a href="#" id="forgot-btn">Forgot password?</a></div>
-      <button class="btn-primary" id="login-btn">Continue</button>
+      <div class="form-group" id="confirm-group" style="display:none;">
+        <label>Confirm Password</label>
+        <input type="password" id="signup-confirm" placeholder="Confirm your password">
+      </div>
+      <div class="forgot-link" id="forgot-link"><a href="#" id="forgot-btn">Forgot password?</a></div>
+      <button class="btn-primary" id="auth-btn">Continue</button>
       <div class="divider"><span>or</span></div>
       <button class="btn-google" id="google-btn">
         <svg class="g-icon" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18A10.96 10.96 0 0 0 1 12c0 1.77.42 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
         Sign in with Google
       </button>
-      <div class="form-footer">Don't have an account? <a href="#">Contact sales</a></div>
+      <div class="form-footer" id="auth-footer">Don't have an account? <a href="#" id="toggle-mode">Create account</a></div>
     </div>
   </div>
 </div>
@@ -828,12 +836,24 @@ const SUPABASE_URL = 'https://xxruetynrhqdpadsqboz.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_kggHLyWQuUcY4N--iixvBQ_oqfW-IGm';
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// DOM elements
 const emailInput = document.getElementById('login-email');
 const passwordInput = document.getElementById('login-password');
-const loginBtn = document.getElementById('login-btn');
+const nameInput = document.getElementById('signup-name');
+const confirmInput = document.getElementById('signup-confirm');
+const authBtn = document.getElementById('auth-btn');
 const googleBtn = document.getElementById('google-btn');
 const forgotBtn = document.getElementById('forgot-btn');
+const toggleBtn = document.getElementById('toggle-mode');
 const authMsg = document.getElementById('auth-message');
+const authTitle = document.getElementById('auth-title');
+const authSubtitle = document.getElementById('auth-subtitle');
+const authFooter = document.getElementById('auth-footer');
+const nameGroup = document.getElementById('name-group');
+const confirmGroup = document.getElementById('confirm-group');
+const forgotLink = document.getElementById('forgot-link');
+
+let isSignUp = false;
 
 function showMessage(text, isError = false) {
   authMsg.style.display = 'block';
@@ -841,81 +861,87 @@ function showMessage(text, isError = false) {
   authMsg.style.background = isError ? 'rgba(239,68,68,0.1)' : 'rgba(59,130,246,0.1)';
   authMsg.style.color = isError ? '#DC2626' : '#2564ED';
 }
+function hideMessage() { authMsg.style.display = 'none'; }
+function setLoading(btn, loading) { btn.disabled = loading; btn.style.opacity = loading ? '0.6' : '1'; }
 
-function hideMessage() {
-  authMsg.style.display = 'none';
+// Toggle Sign In ↔ Sign Up
+function setMode(signUp) {
+  isSignUp = signUp;
+  hideMessage();
+  nameGroup.style.display = signUp ? 'block' : 'none';
+  confirmGroup.style.display = signUp ? 'block' : 'none';
+  forgotLink.style.display = signUp ? 'none' : 'block';
+  authBtn.textContent = signUp ? 'Create account' : 'Continue';
+  authTitle.textContent = signUp ? 'Create your account' : 'Welcome to UltraDesk';
+  authSubtitle.textContent = signUp ? 'Start connecting to any device' : 'Connect to any device, anywhere';
+  authFooter.innerHTML = signUp
+    ? 'Already have an account? <a href="#" id="toggle-mode">Sign in</a>'
+    : 'Don\'t have an account? <a href="#" id="toggle-mode">Create account</a>';
+  document.getElementById('toggle-mode').addEventListener('click', (e) => { e.preventDefault(); setMode(!isSignUp); });
 }
 
-function setLoading(btn, loading) {
-  btn.disabled = loading;
-  btn.style.opacity = loading ? '0.6' : '1';
-}
+toggleBtn.addEventListener('click', (e) => { e.preventDefault(); setMode(true); });
 
-// Email + Password Login
-loginBtn.addEventListener('click', async () => {
+// Auth action (Sign In or Sign Up)
+authBtn.addEventListener('click', async () => {
   hideMessage();
   const email = emailInput.value.trim();
   const password = passwordInput.value;
 
-  if (!email || !password) {
-    showMessage('Please enter email and password.', true);
-    return;
-  }
+  if (!email || !password) { showMessage('Please enter email and password.', true); return; }
 
-  setLoading(loginBtn, true);
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  setLoading(loginBtn, false);
+  if (isSignUp) {
+    const name = nameInput.value.trim();
+    const confirm = confirmInput.value;
+    if (!name) { showMessage('Please enter your name.', true); return; }
+    if (password.length < 6) { showMessage('Password must be at least 6 characters.', true); return; }
+    if (password !== confirm) { showMessage('Passwords do not match.', true); return; }
 
-  if (error) {
-    showMessage(error.message, true);
+    setLoading(authBtn, true);
+    const { data, error } = await supabase.auth.signUp({
+      email, password,
+      options: { data: { full_name: name } }
+    });
+    setLoading(authBtn, false);
+    if (error) { showMessage(error.message, true); }
+    else { showMessage('Account created! Please check your email to verify.'); }
   } else {
-    showMessage('Login successful! Welcome, ' + (data.user.email || ''));
+    setLoading(authBtn, true);
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    setLoading(authBtn, false);
+    if (error) { showMessage(error.message, true); }
+    else { showMessage('Login successful! Welcome, ' + (data.user.email || '')); }
   }
 });
 
-// Enter key support
+// Enter key
 passwordInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') loginBtn.click();
+  if (e.key === 'Enter') { isSignUp ? confirmInput.focus() : authBtn.click(); }
 });
-emailInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') passwordInput.focus();
-});
+emailInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') passwordInput.focus(); });
+confirmInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') authBtn.click(); });
 
 // Google OAuth
 googleBtn.addEventListener('click', async () => {
   hideMessage();
-  const { error } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: { redirectTo: window.location.href }
-  });
+  const { error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
   if (error) showMessage(error.message, true);
 });
 
 // Forgot Password
 forgotBtn.addEventListener('click', async (e) => {
-  e.preventDefault();
-  hideMessage();
+  e.preventDefault(); hideMessage();
   const email = emailInput.value.trim();
-  if (!email) {
-    showMessage('Please enter your email first.', true);
-    return;
-  }
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: window.location.href
-  });
-  if (error) {
-    showMessage(error.message, true);
-  } else {
-    showMessage('Password reset email sent to ' + email);
-  }
+  if (!email) { showMessage('Please enter your email first.', true); return; }
+  const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.href });
+  if (error) { showMessage(error.message, true); }
+  else { showMessage('Password reset email sent to ' + email); }
 });
 
-// Check if already logged in
+// Session check
 (async () => {
   const { data: { session } } = await supabase.auth.getSession();
-  if (session) {
-    showMessage('Already logged in as ' + session.user.email);
-  }
+  if (session) showMessage('Already logged in as ' + session.user.email);
 })();
 </script>
 
