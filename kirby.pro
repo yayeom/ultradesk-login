@@ -39,6 +39,20 @@
 #   → B안 로고: 심볼 SVG + 텍스트 모두 버튼 그라데이션 적용
 #   → 커밋: a4b8bf4, ddb9854
 
+# [DONE] Supabase 연동 + 회원가입 + 파일 분리 + 배포 준비
+#   입력: 2026-03-27 | 완료: 2026-03-27 | 소요: ~2h
+#   모델: claude-opus-4-6 | 토큰: 세션 누적
+#   프롬프트:
+#     A/B안 HTML 분리 (a/index.html, b/index.html). Supabase 이메일 로그인 연동.
+#     회원가입 기능 추가 (같은 페이지 토글). Vercel 배포 설정. GitHub push.
+#   → A/B안 분리: login-concepts-A → a/index.html, B → b/index.html
+#   → Supabase 연동: signInWithPassword, signUp(full_name), Google OAuth, resetPassword
+#   → 회원가입: Sign in ↔ Create account 토글 (B2B SaaS 패턴)
+#   → SDK 안전 처리: try/catch로 초기화 실패 시 UI 보호
+#   → Vercel: vercel.json 설정, Root Directory: login-page/prototype
+#   → 배포: GitLab + GitHub 양쪽 push 완료
+#   → 커밋: c31e87e → 981fbe8 (6건)
+
 
 # ============================================================
 # [INPUT] 여기에 지시사항을 입력하세요 ▼

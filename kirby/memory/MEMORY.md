@@ -55,11 +55,11 @@
 
 ## 진행 중 프로젝트
 
-- **로그인 페이지 컨셉**: [project-login-page.md](project-login-page.md) — A안 확정, 디벨롭 중
+- **로그인 페이지 컨셉**: [project-login-page.md](project-login-page.md) — A/B안 Supabase 연동 완료, Vercel 배포 준비
 
 ## 교훈 (Lessons Learned)
 
-- **공통 교훈**: [lessons-learned.md](lessons-learned.md) — 4건 (3D 이미지 감지, CORS, 시드 PRNG, 배경 분석)
+- **공통 교훈**: [lessons-learned.md](lessons-learned.md) — 5건 (3D 이미지 감지, CORS, 시드 PRNG, 배경 분석, SDK 안전 처리)
 
 ## Git 컨벤션
 
