@@ -335,9 +335,13 @@
 <!-- Supabase Auth -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const SUPABASE_URL = 'https://xxruetynrhqdpadsqboz.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_kggHLyWQuUcY4N--iixvBQ_oqfW-IGm';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let supabaseClient = null;
+try {
+  supabaseClient = window.supabase.createClient(
+    'https://xxruetynrhqdpadsqboz.supabase.co',
+    'sb_publishable_kggHLyWQuUcY4N--iixvBQ_oqfW-IGm'
+  );
+} catch(e) { console.error('Supabase init failed:', e); }
 
 const emailInput = document.getElementById('login-email');
 const passwordInput = document.getElementById('login-password');
@@ -396,13 +400,13 @@ authBtn.addEventListener('click', async () => {
     if (password.length < 6) { showMessage('Password must be at least 6 characters.', true); return; }
     if (password !== confirm) { showMessage('Passwords do not match.', true); return; }
     setLoading(authBtn, true);
-    const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { full_name: name } } });
+    const { data, error } = await supabaseClient.auth.signUp({ email, password, options: { data: { full_name: name } } });
     setLoading(authBtn, false);
     if (error) { showMessage(error.message, true); }
     else { showMessage('Account created! Please check your email to verify.'); }
   } else {
     setLoading(authBtn, true);
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
     setLoading(authBtn, false);
     if (error) { showMessage(error.message, true); }
     else { showMessage('Login successful! Welcome, ' + (data.user.email || '')); }
@@ -415,7 +419,7 @@ confirmInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') authBtn
 
 googleBtn.addEventListener('click', async () => {
   hideMessage();
-  const { error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
+  const { error } = await supabaseClient.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
   if (error) showMessage(error.message, true);
 });
 
@@ -423,13 +427,13 @@ forgotBtn.addEventListener('click', async (e) => {
   e.preventDefault(); hideMessage();
   const email = emailInput.value.trim();
   if (!email) { showMessage('Please enter your email first.', true); return; }
-  const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.href });
+  const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: window.location.href });
   if (error) { showMessage(error.message, true); }
   else { showMessage('Password reset email sent to ' + email); }
 });
 
 (async () => {
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { session } } = await supabaseClient.auth.getSession();
   if (session) showMessage('Already logged in as ' + session.user.email);
 })();
 </script>
